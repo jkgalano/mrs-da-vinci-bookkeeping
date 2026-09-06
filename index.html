@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookkeeping — Mrs da Vinci Pty Ltd</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-name">Mrs da Vinci Pty Ltd</span>
+      <span class="brand-sub">Internal Bookkeeping</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="new-request">New Purchase Request</button>
+      <button class="tab-btn" data-tab="requests">Purchase Requests</button>
+      <button class="tab-btn" data-tab="monthly-report">Monthly Report</button>
+      <button class="tab-btn" data-tab="fund-balance">Fund Balance</button>
+    </nav>
+  </div>
+</header>
+
+<main class="app-main">
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="tab-panel active">
+    <h1>Bookkeeping</h1>
+    <div class="card-grid">
+      <div class="stat-card">
+        <span class="stat-label">Current Fund Balance</span>
+        <span class="stat-value" id="stat-fund-balance">$0.00</span>
+        <span class="stat-note">Starting balance $10,000.00</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total Expenses</span>
+        <span class="stat-value" id="stat-total-expenses">$0.00</span>
+        <span class="stat-note">Paid amounts, all time</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Monthly Expenses</span>
+        <span class="stat-value" id="stat-monthly-expenses">$0.00</span>
+        <span class="stat-note" id="stat-monthly-note">This month</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Active Subscriptions</span>
+        <span class="stat-value" id="stat-active-subs">0</span>
+        <span class="stat-note">Monthly &amp; annual, approved</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Awaiting Approval</span>
+        <span class="stat-value" id="stat-awaiting-approval">0</span>
+        <span class="stat-note">Requests pending a decision</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Missing Documents</span>
+        <span class="stat-value" id="stat-missing-docs">0</span>
+        <span class="stat-note">Approved requests with no proof attached</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW PURCHASE REQUEST -->
+  <section id="new-request" class="tab-panel">
+    <h1>Purchase Request</h1>
+    <form id="purchase-form" class="form-card">
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="req-date">Request date</label>
+          <input type="date" id="req-date" required>
+        </div>
+        <div class="form-field">
+          <label for="req-requestedBy">Requested by</label>
+          <select id="req-requestedBy" required>
+            <option value="" disabled selected>Select director</option>
+            <option value="Johanna Galano">Johanna Galano</option>
+            <option value="Giorgenes Gelatti">Giorgenes Gelatti</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="req-approver">Approver</label>
+          <input type="text" id="req-approver" readonly placeholder="Auto-assigned">
+        </div>
+        <div class="form-field">
+          <label for="req-supplier">Supplier</label>
+          <input type="text" id="req-supplier" required placeholder="e.g. Officeworks">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="req-itemName">Purchase or subscription name</label>
+        <input type="text" id="req-itemName" required placeholder="e.g. Adobe Creative Cloud">
+      </div>
+
+      <div class="form-field">
+        <label for="req-reason">Business reason</label>
+        <textarea id="req-reason" rows="3" required placeholder="Why is this purchase needed?"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="req-amount">Amount (AUD)</label>
+          <input type="number" id="req-amount" min="0" step="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label for="req-frequency">Type</label>
+          <select id="req-frequency" required>
+            <option value="" disabled selected>Select type</option>
+            <option value="One-off">One-off</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Annual">Annual</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="req-startDate">Purchase / proposed start date</label>
+          <input type="date" id="req-startDate" required>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Submit Purchase Request</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- REQUESTS TABLE -->
+  <section id="requests" class="tab-panel">
+    <h1>Purchase Requests</h1>
+    <div class="table-wrap">
+      <table id="requests-table">
+        <thead>
+          <tr>
+            <th>Request Date</th>
+            <th>Requested By</th>
+            <th>Supplier</th>
+            <th>Item</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Start Date</th>
+            <th>Approver</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Documents</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="requests-tbody">
+          <!-- rows injected by script.js -->
+        </tbody>
+      </table>
+      <p id="requests-empty" class="empty-note">No purchase requests yet.</p>
+    </div>
+  </section>
+
+  <!-- MONTHLY REPORT -->
+  <section id="monthly-report" class="tab-panel">
+    <h1>Monthly Report</h1>
+
+    <div class="form-card report-controls">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="report-month">Month</label>
+          <input type="month" id="report-month">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="generate-report-btn" class="btn btn-primary">Generate Report</button>
+      </div>
+    </div>
+
+    <div id="report-output" class="report-output" style="display:none;">
+      <div class="card-grid" id="report-summary"></div>
+
+      <div class="table-wrap report-table-wrap">
+        <table id="report-table">
+          <thead>
+            <tr>
+              <th>Request Date</th>
+              <th>Requested By</th>
+              <th>Supplier</th>
+              <th>Item</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Start Date</th>
+              <th>Status</th>
+              <th>Payment</th>
+            <th>Documents</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="report-tbody"></tbody>
+        </table>
+        <p id="report-empty" class="empty-note">No purchase requests fall in this month.</p>
+      </div>
+
+      <h3 class="section-subtitle">Fund Deductions This Month</h3>
+      <div class="table-wrap report-table-wrap">
+        <table id="report-deductions-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Item</th>
+              <th>Type</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="report-deductions-tbody"></tbody>
+        </table>
+        <p id="report-deductions-empty" class="empty-note">No fund deductions this month.</p>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="download-report-pdf" class="btn btn-secondary">Download Report PDF</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUND BALANCE -->
+  <section id="fund-balance" class="tab-panel">
+    <h1>Fund Balance</h1>
+
+    <div class="card-grid" id="fund-summary">
+      <div class="stat-card">
+        <span class="stat-label">Starting Balance</span>
+        <span class="stat-value" id="fund-stat-starting">$10,000.00</span>
+        <span class="stat-note">Fixed opening balance</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Deposits</span>
+        <span class="stat-value" id="fund-stat-deposits">$0.00</span>
+        <span class="stat-note">All time</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Refunds</span>
+        <span class="stat-value" id="fund-stat-refunds">$0.00</span>
+        <span class="stat-note">All time</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Purchase Deductions</span>
+        <span class="stat-value" id="fund-stat-deductions">$0.00</span>
+        <span class="stat-note">Paid requests, incl. recurring</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Current Balance</span>
+        <span class="stat-value" id="fund-stat-balance">$10,000.00</span>
+        <span class="stat-note">As of today</span>
+      </div>
+    </div>
+
+    <form id="fund-form" class="form-card">
+      <h3>Add Deposit or Refund</h3>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="fund-date">Date</label>
+          <input type="date" id="fund-date" required>
+        </div>
+        <div class="form-field">
+          <label for="fund-type">Type</label>
+          <select id="fund-type" required>
+            <option value="Deposit">Deposit</option>
+            <option value="Refund">Refund</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="fund-amount">Amount (AUD)</label>
+          <input type="number" id="fund-amount" min="0" step="0.01" required placeholder="0.00">
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="fund-note">Note</label>
+        <input type="text" id="fund-note" placeholder="e.g. Director capital contribution">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Entry</button>
+      </div>
+    </form>
+
+    <div class="table-wrap">
+      <table id="fund-ledger-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Running Balance</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="fund-ledger-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- DETAIL / APPROVAL MODAL -->
+<div id="detail-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Purchase Request Detail</h2>
+      <button id="modal-close" class="modal-close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-summary" id="detail-summary"></div>
+
+      <form id="approval-form">
+        <h3>Approval</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="apr-decision">Approved or Declined</label>
+            <select id="apr-decision">
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Declined">Declined</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="apr-approver">Approver</label>
+            <input type="text" id="apr-approver" readonly>
+          </div>
+          <div class="form-field">
+            <label for="apr-date">Approval date</label>
+            <input type="date" id="apr-date">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="apr-comments">Comments</label>
+          <textarea id="apr-comments" rows="2" placeholder="Optional comments"></textarea>
+        </div>
+
+        <h3>After Purchase</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="ap-paymentStatus">Payment status</label>
+            <select id="ap-paymentStatus">
+              <option value="Unpaid">Unpaid</option>
+              <option value="Paid">Paid</option>
+              <option value="Refunded">Refunded</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="ap-finalAmount">Final amount paid (AUD)</label>
+            <input type="number" id="ap-finalAmount" min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-field">
+            <label for="ap-bookkeepingRef">Bookkeeping reference</label>
+            <input type="text" id="ap-bookkeepingRef" placeholder="e.g. INV-2026-014">
+          </div>
+        </div>
+        <div class="form-row" id="refund-fields">
+          <div class="form-field">
+            <label for="ap-refundDate">Refund date</label>
+            <input type="date" id="ap-refundDate">
+          </div>
+          <div class="form-field">
+            <label for="ap-refundAmount">Refund amount (AUD)</label>
+            <input type="number" id="ap-refundAmount" min="0" step="0.01" placeholder="0.00">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field checkbox-field">
+            <label><input type="checkbox" id="ap-invoiceReceived"> Invoice / receipt received</label>
+          </div>
+          <div class="form-field checkbox-field">
+            <label><input type="checkbox" id="ap-evidenceReceived"> Payment evidence received</label>
+          </div>
+        </div>
+        <p class="field-hint" id="ap-renewal-info"></p>
+
+        <div class="form-field">
+          <label>Attach receipt / invoice</label>
+          <div id="ap-dropzone" class="dropzone" tabindex="0">
+            <p>Drag &amp; drop files here, or <span class="dropzone-browse">browse</span></p>
+            <input type="file" id="ap-attachment-input" accept=".pdf,.png,.jpg,.jpeg,.webp,.heic" multiple hidden>
+          </div>
+        </div>
+        <p class="field-hint" id="ap-attachments-ref-note"></p>
+        <ul id="ap-attachments-list" class="attachments-list"></ul>
+
+        <div class="form-actions modal-actions">
+          <button type="button" id="delete-request" class="btn btn-danger">Delete Request</button>
+          <button type="button" id="download-pdf" class="btn btn-secondary">Download PDF</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Printable summary, populated per-request and shown only when printing/saving as PDF -->
+<div id="printable-request" class="printable-request">
+  <h1 class="print-title" id="printable-title">Purchase Request</h1>
+  <p class="print-company">Mrs da Vinci Pty Ltd</p>
+  <div id="printable-body"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
